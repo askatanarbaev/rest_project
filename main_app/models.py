@@ -32,7 +32,7 @@ class Product(models.Model):
     description = models.TextField(verbose_name='Описания товара')
     slug = models.SlugField(unique=True)
     category = models.CharField(choices=CATEGORY, default=' ', max_length=255)
-    created_by = models.ForeignKey(Profile, related_name='product', on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, related_name='product', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
