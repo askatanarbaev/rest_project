@@ -7,5 +7,6 @@ urlpatterns = [
     path('products/<int:pk>/detail/', ProductDetailAPIView.as_view(), name='product_detail'),
     path('products/<int:pk>/update/', ProductUpdateAPIView.as_view(), name='product_update'),
     path('products/create/', ProductCreate.as_view(), name='company_create'),
+    path('register/', RegisterView.as_view(), name='auth_register'),
 ]
 
