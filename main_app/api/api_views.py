@@ -1,6 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, generics, status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (ProductSerializer, ProfileSerializer,
@@ -8,8 +9,9 @@ from .serializers import (ProductSerializer, ProfileSerializer,
                           )
 from ..models import Product, Profile
 from .pagination import ListPagination
-from django.contrib.auth.models import User
 from rest_framework import permissions
+from django.contrib.auth.models import User
+from .serializers import RegisterSerializer
 
 
 class ProductListAPIView(ListAPIView):
@@ -27,7 +29,7 @@ class ProfileListAPIView(ListAPIView):
     pagination_class = ListPagination
     filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     search_fields = ('first_name',)
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
 
 
 class ProductUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -37,9 +39,11 @@ class ProductUpdateAPIView(generics.RetrieveUpdateDestroyAPIView):
                           IsOwnerOrReadOnly,)
 
 
-class ProductDetailAPIView(RetrieveAPIView):
+class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ProductDetailSerializer
     queryset = Product.objects.all()
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,
+                          IsOwnerOrReadOnly,)
 
 
 class ProductCreate(generics.CreateAPIView):
@@ -52,5 +56,12 @@ class ProductCreate(generics.CreateAPIView):
             'created_by': self.request.user
         })
         return context
+
+
+# class for register user
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (AllowAny,)
+    serializer_class = RegisterSerializer
 
 
