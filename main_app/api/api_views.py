@@ -1,17 +1,17 @@
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, generics, status
-from rest_framework.generics import ListAPIView, RetrieveAPIView, RetrieveUpdateAPIView
-from rest_framework.permissions import IsAuthenticated, AllowAny
-
+from rest_framework import filters, generics
+from rest_framework.generics import ListAPIView
+from rest_framework.permissions import AllowAny
 from .permissions import IsOwnerOrReadOnly
 from .serializers import (ProductSerializer, ProfileSerializer,
                           ProductDetailSerializer, ProductUpdateSerializer,
                           )
 from ..models import Product, Profile
 from .pagination import ListPagination
-from rest_framework import permissions
 from django.contrib.auth.models import User
+from rest_framework import permissions
 from .serializers import RegisterSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 class ProductListAPIView(ListAPIView):
@@ -48,14 +48,7 @@ class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
 
 class ProductCreate(generics.CreateAPIView):
     serializer_class = ProductSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-
-    def get_serializer_context(self):
-        context = super(ProductCreate, self).get_serializer_context()
-        context.update({
-            'created_by': self.request.user
-        })
-        return context
+    permission_classes = (IsAuthenticated,)
 
 
 # class for register user
@@ -63,5 +56,4 @@ class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
     serializer_class = RegisterSerializer
-
 
